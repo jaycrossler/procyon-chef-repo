@@ -18,3 +18,14 @@ if node['procyon']['debug']
 end
 
 include_recipe 'nginx::default'
+
+template "nginx_proxy_config" do
+  path File.join(node['nginx']['dir'], 'proxy.conf')
+  source 'proxy.conf.erb'
+end
+
+template "procyon_nginx_config" do
+  path "#{node['nginx']['dir']}/sites-enabled/procyon.conf"
+  source "procyon.conf.erb"
+  notifies :reload, "service[nginx]", :immediately
+end

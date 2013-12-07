@@ -1,4 +1,4 @@
-procyon_pkgs = "build-essential python-dev libpq-dev libpng-dev libfreetype6 libfreetype6-dev".split
+procyon_pkgs = "build-essential python-dev libpq-dev libpng-dev libfreetype6 libfreetype6-dev gdal-bin".split
 
 procyon_pkgs.each do |pkg|
   package pkg do

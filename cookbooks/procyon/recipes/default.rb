@@ -1,4 +1,4 @@
-procyon_pkgs = "build-essential python-dev libpq-dev libpng-dev libfreetype6 libfreetype6-dev gdal-bin".split
+procyon_pkgs = "build-essential python-dev libpq-dev libpng-dev libfreetype6 libfreetype6-dev".split
 
 procyon_pkgs.each do |pkg|
   package pkg do
@@ -29,8 +29,36 @@ execute "install_procyon_dependencies" do
   user 'root'
 end
 
+template "procyon_local_settings" do
+  source "local_settings.py.erb"
+  path "#{node['procyon']['virtualenv']['location']}/local_settings.py"
+  variables ({:database => node['procyon']['settings']['DATABASES']['default']})
+end
+
+link "local_settings_symlink" do
+  link_type :symbolic
+  to "#{node['procyon']['virtualenv']['location']}/local_settings.py"
+  target_file "#{node['procyon']['location']}/procyon/local_settings.py"
+  not_if do File.exists?("#{node['procyon']['location']}/procyon/local_settings.py") end
+end
+
+hostsfile_entry node['procyon']['database']['address'] do
+  hostname node['procyon']['database']['hostname']
+  only_if do node['procyon']['database']['hostname'] && node['procyon']['database']['address'] end
+  action :append
+end
+
+include_recipe 'procyon::postgis'
+include_recipe 'procyon::database'
+
 directory node['procyon']['logging']['location'] do
   action :create
+end
+
+execute "sync_db" do
+  command "#{node['procyon']['virtualenv']['location']}/bin/python manage.py syncdb --noinput && #{node['procyon']['virtualenv']['location']}/bin/python manage.py migrate --all"
+  cwd "#{node['procyon']['location']}"
+  action :run
 end
 
 template "procyon_uwsgi_ini" do

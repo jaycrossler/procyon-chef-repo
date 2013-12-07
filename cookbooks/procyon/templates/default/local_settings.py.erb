@@ -1,0 +1,11 @@
+DEBUG = <%= node['procyon']['debug'] ? "True":"False" %>
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': '<%= @database[:name] %>',
+        'USER': '<%= @database[:user] %>',
+        'PASSWORD': '<%= @database[:password] %>',
+        'HOST': '<%= @database[:host] %>',
+        'PORT': '<%= @database[:port] %>',
+        }
+    }

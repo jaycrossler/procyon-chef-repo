@@ -1,4 +1,4 @@
-procyon_pkgs = "build-essential python-dev".split
+procyon_pkgs = "build-essential python-dev libpq-dev libpng-dev libfreetype6 libfreetype6-dev".split
 
 procyon_pkgs.each do |pkg|
   package pkg do
@@ -19,6 +19,14 @@ git node['procyon']['location'] do
   repository node['procyon']['git_repo']['location']
   revision node['procyon']['git_repo']['branch']
   action :sync
+  notifies :run, "execute[install_procyon_dependencies]", :immediately
+end
+
+execute "install_procyon_dependencies" do
+  command "#{node['procyon']['virtualenv']['location']}/bin/pip install -r requirements.txt"
+  cwd node['procyon']['location']
+  action :run
+  user 'root'
 end
 
 directory node['procyon']['logging']['location'] do

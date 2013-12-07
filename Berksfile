@@ -7,4 +7,3 @@ cookbook 'ohai', '~> 1.1.12'
 cookbook 'procyon', :path => "cookbooks/procyon"
 cookbook 'hostsfile', '~> 2.4.0'
 cookbook 'database', '~>1.5.2'
-cookbook 'postgis', '~>0.2.4'

@@ -25,7 +25,7 @@ end
 execute "install_procyon_dependencies" do
   command "#{node['procyon']['virtualenv']['location']}/bin/pip install -r requirements.txt"
   cwd node['procyon']['location']
-  action :run
+  action :nothing
   user 'root'
 end
 

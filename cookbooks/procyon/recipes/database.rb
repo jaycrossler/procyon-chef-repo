@@ -25,6 +25,7 @@ postgresql_database procyon_db[:name] do
   owner procyon_db[:user]
   action :create
   notifies :run, "execute[sync_db]"
+  notifies :run, "bash[install_fixtures]"
 end
 
 postgresql_database 'set user' do

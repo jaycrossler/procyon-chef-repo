@@ -75,6 +75,13 @@ execute "collect_static" do
   action :nothing
 end
 
+bash "install_fixtures" do
+  code "source #{node['procyon']['virtualenv']['location']}/bin/activate && paver install_dev_fixtures"
+  cwd "#{node['procyon']['location']}"
+  user 'postgres'
+  action :nothing
+end
+
 template "procyon_uwsgi_ini" do
   path "#{node['procyon']['virtualenv']['location']}/procyon.ini"
   source "procyon.ini.erb"

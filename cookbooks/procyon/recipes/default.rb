@@ -92,7 +92,14 @@ end
 
 include_recipe 'procyon::nginx'
 
+start_procyon = "#{node['procyon']['virtualenv']['location']}/bin/uwsgi --ini #{node['procyon']['virtualenv']['location']}/procyon.ini &"
+
 execute "start_django_server" do
-  command "#{node['procyon']['virtualenv']['location']}/bin/uwsgi --ini #{node['procyon']['virtualenv']['location']}/procyon.ini &"
+  command start_procyon
 end
 
+file "/etc/cron.d/procyon_restart" do
+  content "@reboot root #{node['procyon']['virtualenv']['location']}/bin/uwsgi --ini #{node['procyon']['virtualenv']['location']}/procyon.ini &"
+  mode 00755
+  action :create_if_missing
+end

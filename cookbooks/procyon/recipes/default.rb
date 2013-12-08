@@ -20,6 +20,7 @@ git node['procyon']['location'] do
   revision node['procyon']['git_repo']['branch']
   action :sync
   notifies :run, "execute[install_procyon_dependencies]", :immediately
+  notifies :run, "execute[collect_static]"
 end
 
 execute "install_procyon_dependencies" do
@@ -55,10 +56,23 @@ directory node['procyon']['logging']['location'] do
   action :create
 end
 
+directory node['procyon']['settings']['static_root'] do
+  owner "root"
+  mode 00755
+  action :create
+  recursive true
+end
+
 execute "sync_db" do
   command "#{node['procyon']['virtualenv']['location']}/bin/python manage.py syncdb --noinput && #{node['procyon']['virtualenv']['location']}/bin/python manage.py migrate --all"
   cwd "#{node['procyon']['location']}"
   action :run
+end
+
+execute "collect_static" do
+  command "#{node['procyon']['virtualenv']['location']}/bin/python manage.py collectstatic --noinput"
+  cwd "#{node['procyon']['location']}"
+  action :nothing
 end
 
 template "procyon_uwsgi_ini" do

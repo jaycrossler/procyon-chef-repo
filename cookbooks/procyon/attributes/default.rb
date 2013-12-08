@@ -17,6 +17,9 @@ default[:postgis][:version] = '2.0.4'
 default['postgis']['template_name'] = 'template_postgis'
 default['postgis']['locale'] = 'en_US.utf8'
 
+default['procyon']['settings']['static_root'] = '/data/www'
+default['procyon']['settings']['static_url'] = '/static/'
+
 default['procyon']['settings']['DATABASES'] = {
     :default=>{
         :name => node['procyon']['database']['name'],

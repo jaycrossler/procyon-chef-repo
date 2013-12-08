@@ -9,3 +9,6 @@ DATABASES = {
         'PORT': '<%= @database[:port] %>',
         }
     }
+
+STATIC_ROOT = '<%= node['procyon']['settings']['static_root'] %>'
+STATIC_URL = '<%= node['procyon']['settings']['static_url'] %>'

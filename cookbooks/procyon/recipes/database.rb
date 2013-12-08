@@ -24,7 +24,6 @@ postgresql_database procyon_db[:name] do
   template node['postgis']['template_name']
   owner procyon_db[:user]
   action :create
-  notifies :run, "execute[sync_db]"
   notifies :run, "bash[install_fixtures]"
 end
 

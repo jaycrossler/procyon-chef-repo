@@ -20,6 +20,7 @@ git node['procyon']['location'] do
   revision node['procyon']['git_repo']['branch']
   action :sync
   notifies :run, "execute[install_procyon_dependencies]", :immediately
+  notifies :run, "bash[sync_db]"
   notifies :run, "execute[collect_static]"
 end
 
@@ -63,10 +64,10 @@ directory node['procyon']['settings']['static_root'] do
   recursive true
 end
 
-execute "sync_db" do
-  command "#{node['procyon']['virtualenv']['location']}/bin/python manage.py syncdb --noinput && #{node['procyon']['virtualenv']['location']}/bin/python manage.py migrate --all"
+bash "sync_db" do
+  code "source #{node['procyon']['virtualenv']['location']}/bin/activate && paver sync"
   cwd "#{node['procyon']['location']}"
-  action :run
+  action :nothing
 end
 
 execute "collect_static" do

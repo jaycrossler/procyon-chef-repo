@@ -65,10 +65,7 @@ directory node['procyon']['settings']['static_root'] do
 end
 
 bash "sync_db" do
-  code "source #{node['procyon']['virtualenv']['location']}/bin/activate"
-  command "#{node['procyon']['virtualenv']['location']}/bin/python manage.py migrate starcatalog"
-  command "#{node['procyon']['virtualenv']['location']}/bin/python manage.py migrate starsystemmaker"
-  code "source #{node['procyon']['virtualenv']['location']}/bin/activate && paver sync"
+  code "source #{node['procyon']['virtualenv']['location']}/bin/activate && python manage.py migrate starcatalog && python manage.py migrate starsystemmaker && paver sync"
   cwd "#{node['procyon']['location']}"
   action :nothing
 end

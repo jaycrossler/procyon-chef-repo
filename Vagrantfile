@@ -6,8 +6,18 @@ vagrant_config = YAML::load_file("vagrant_dev_settings.yml")
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-# If deploying to AWS, update 'vagrant_dev_settings.yml' with prover settings and change:
-#DEPLOY_TO_AWS: True
+# If deploying to AWS, create 'vagrant_dev_settings.yml' with proper settings, something like:
+#DEPLOY_TO_AWS: False
+#
+#KEYPAIR_NAME: 'my_keyfile_name-aws-ssh'
+#KEYPAIR_PATH: '~/.ssh/my_key_file-aws-ssh.pem'
+#
+#AWS:
+#  ACCESS_KEY_ID: 'XXX'
+#  SECRET_ACCESS_KEY: 'XXX'
+#  AMI: 'ami-xxx'
+#  SECURITY_GROUPS: ["mywebserver"]
+
 
 host_cache_path = File.expand_path("../.cache", __FILE__)
 guest_cache_path = "/tmp/vagrant-cache"

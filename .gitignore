@@ -10,3 +10,4 @@
 .vagrant
 .vagrant/*
 Berksfile.lock
+vagrant_dev_settings.yml

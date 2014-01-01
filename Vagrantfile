@@ -1,23 +1,26 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-require 'yaml'
-vagrant_config = YAML::load_file("vagrant_dev_settings.yml")
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-# If deploying to AWS, create 'vagrant_dev_settings.yml' with proper settings, something like:
-#DEPLOY_TO_AWS: False
-#
+# If deploying to AWS, create 'vagrant_dev_settings.yml' (in project dir, or one right above it)
+# with these settings:
 #KEYPAIR_NAME: 'my_keyfile_name-aws-ssh'
 #KEYPAIR_PATH: '~/.ssh/my_key_file-aws-ssh.pem'
 #
-#AWS:
+#AWS-PROCYON:
+#  DEPLOY_TO_AWS: False
 #  ACCESS_KEY_ID: 'XXX'
 #  SECRET_ACCESS_KEY: 'XXX'
 #  AMI: 'ami-xxx'
 #  SECURITY_GROUPS: ["mywebserver"]
-
+#
+require 'yaml'
+vagrant_config = YAML::load_file("../vagrant_dev_settings.yml")
+if not vagrant_config
+  vagrant_config = YAML::load_file("vagrant_dev_settings.yml")
+end
 
 host_cache_path = File.expand_path("../.cache", __FILE__)
 guest_cache_path = "/tmp/vagrant-cache"
@@ -28,16 +31,16 @@ FileUtils.mkdir(host_cache_path) unless File.exist?(host_cache_path)
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.berkshelf.enabled = true  
 
-  if vagrant_config and vagrant_config['DEPLOY_TO_AWS']==true
+  if vagrant_config and vagrant_config['AWS-PROCYON']['DEPLOY_TO_AWS']==true
     config.vm.box = "ubuntu_aws"
     config.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
     config.vm.provider :aws do |aws, override|
       aws.instance_type = "t1.micro"
-      aws.access_key_id = vagrant_config['AWS']['ACCESS_KEY_ID']
-      aws.secret_access_key = vagrant_config['AWS']['SECRET_ACCESS_KEY']
+      aws.access_key_id = vagrant_config['AWS-PROCYON']['ACCESS_KEY_ID']
+      aws.secret_access_key = vagrant_config['AWS-PROCYON']['SECRET_ACCESS_KEY']
       aws.keypair_name = vagrant_config['KEYPAIR_NAME']
-      aws.security_groups = vagrant_config['AWS']['SECURITY_GROUPS']
-      aws.ami = vagrant_config['AWS']['AMI']
+      aws.security_groups = vagrant_config['AWS-PROCYON']['SECURITY_GROUPS']
+      aws.ami = vagrant_config['AWS-PROCYON']['AMI']
       aws.tags = {
         'Name' => 'Procyon',
         'Maturity' => 'Development'

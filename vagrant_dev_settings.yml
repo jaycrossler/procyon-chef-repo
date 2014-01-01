@@ -4,7 +4,7 @@ KEYPAIR_NAME: 'my_keyfile_name-aws-ssh'
 KEYPAIR_PATH: '~/.ssh/my_key_file-aws-ssh.pem'
 
 AWS:
-ACCESS_KEY_ID: 'XXX'
-SECRET_ACCESS_KEY: 'XXX'
-AMI: 'ami-xxx'
-SECURITY_GROUPS: ["mywebserver"]
+  ACCESS_KEY_ID: 'XXX'
+  SECRET_ACCESS_KEY: 'XXX'
+  AMI: 'ami-xxx'
+  SECURITY_GROUPS: ["mywebserver"]

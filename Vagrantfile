@@ -1,15 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+require 'yaml'
+vagrant_config = YAML::load_file("vagrant_dev_settings.yml")
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-# Add this to ~/.bash_login:
-# export AWS_ACCESS_KEY_ID=XXXX
-# export AWS_SECRET_ACCESS_KEY=XXXXX
-# export AWS_AMI=ami-xxxxxxxx
-# export DEPLOY_TO_AWS=true
-
+# If deploying to AWS, update 'vagrant_dev_settings.yml' with prover settings and change:
+#DEPLOY_TO_AWS: True
 
 host_cache_path = File.expand_path("../.cache", __FILE__)
 guest_cache_path = "/tmp/vagrant-cache"
@@ -20,22 +18,22 @@ FileUtils.mkdir(host_cache_path) unless File.exist?(host_cache_path)
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.berkshelf.enabled = true  
 
-  if ENV['DEPLOY_TO_AWS']
+  if vagrant_config and vagrant_config['DEPLOY_TO_AWS']==true
     config.vm.box = "ubuntu_aws"
     config.vm.box_url = "https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box"
     config.vm.provider :aws do |aws, override|
       aws.instance_type = "t1.micro"
-      aws.access_key_id = ENV['AWS_ACCESS_KEY_ID']
-      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-      aws.keypair_name = "macbookair-aws-ssh"
-      aws.security_groups = ["mywebserver"]
-      aws.ami = ENV['AWS_AMI']
+      aws.access_key_id = vagrant_config['AWS']['ACCESS_KEY_ID']
+      aws.secret_access_key = vagrant_config['AWS']['SECRET_ACCESS_KEY']
+      aws.keypair_name = vagrant_config['KEYPAIR_NAME']
+      aws.security_groups = vagrant_config['AWS']['SECURITY_GROUPS']
+      aws.ami = vagrant_config['AWS']['AMI']
       aws.tags = {
         'Name' => 'Procyon',
         'Maturity' => 'Development'
       }
       override.ssh.username = "ubuntu"
-      override.ssh.private_key_path = "~/.ssh/macbookair-aws-ssh.pem"
+      override.ssh.private_key_path = vagrant_config['KEYPAIR_PATH']
     end
   else
     config.vm.box = "precise64"

@@ -17,9 +17,10 @@ VAGRANTFILE_API_VERSION = "2"
 #  SECURITY_GROUPS: ["mywebserver"]
 #
 require 'yaml'
-vagrant_config = YAML::load_file("../vagrant_dev_settings.yml")
-if not vagrant_config
-  vagrant_config = YAML::load_file("vagrant_dev_settings.yml")
+if File.exists? ("../vagrant_dev_settings.yml")
+    vagrant_config = YAML::load_file("../vagrant_dev_settings.yml")
+elsif File.exists? ("vagrant_dev_settings.yml")
+    vagrant_config = YAML::load_file("vagrant_dev_settings.yml")
 end
 
 host_cache_path = File.expand_path("../.cache", __FILE__)

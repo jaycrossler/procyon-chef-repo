@@ -56,17 +56,34 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network :public_network
 
-  config.vm.provision :shell, :path => "scripts/install_rvm.sh",  :args => "stable"
-  config.vm.provision :shell, :path => "scripts/install_ruby.sh", :args => "1.9.3"
-  config.vm.provision :shell, :path => "scripts/install_PIL.sh"
-  config.vm.provision :shell, :inline => "gem install chef --version 11.6.0 --no-rdoc --no-ri --conservative"
+  if vagrant_config and vagrant_config['AWS-GEOQ']['SKIP_SCRIPTS']
 
-  config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = "cookbooks"
-    chef.add_recipe "apt"
-    chef.add_recipe "python"
-    chef.add_recipe "git"
-    chef.add_recipe "procyon"
+      if vagrant_config and vagrant_config['AWS-GEOQ']['USE_LOCAL_REPO']==true
+          config.vm.synced_folder "../procyon", "/vagrant/procyon-repo"
+      end
+
+  else
+      config.vm.provision :shell, :path => "scripts/install_rvm.sh",  :args => "stable"
+      config.vm.provision :shell, :path => "scripts/install_ruby.sh", :args => "stable"
+      config.vm.provision :shell, :path => "scripts/install_PIL.sh"
+      config.vm.provision :shell, :inline => "gem install chef --version 11.6.0 --no-rdoc --no-ri --conservative"
+
+      config.vm.provision :chef_solo do |chef|
+        chef.cookbooks_path = "cookbooks"
+        chef.add_recipe "apt"
+        chef.add_recipe "python"
+        chef.add_recipe "git"
+        chef.add_recipe "procyon"
+      end
+
+      # If Nameserver not found, try:
+      #echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
+
+      config.vm.provision :shell, :path => "scripts/install_scipy.sh"
   end
+
+  config.vm.provision :shell, :path => "scripts/restart_web_server.sh"
+  cmd = %Q|osascript -e 'display notification "Server command executing" with title "Procyon Updating"'|
+  system ( cmd )
 
 end
